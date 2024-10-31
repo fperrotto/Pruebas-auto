@@ -16,7 +16,7 @@ Trigger = Pin(15, Pin.OUT)
 Echo = Pin(14, Pin.IN)
 Buzzer = Pin(13, Pin.OUT)
 
-Estado = 0
+sensor_activado = False
 distancia = 0
 
 def adelante():
@@ -54,8 +54,8 @@ def bocina():
     sleep(1)
     Buzzer.value(0)
 
-def sensor():
-    while True:
+def medir_distancia():
+    if sensor_activado:
         Trigger.high()
         utime.sleep(0.00001)
         Trigger.low()
@@ -67,28 +67,36 @@ def sensor():
 
         duracion = final - comienzo
         distancia = int((duracion * 0.0343) / 2)
-        utime.sleep(0.1)
-            
+        
         print(distancia)
         
         if distancia > 20:
             Buzzer.value(0)
-        if (distancia <= 20) and (distancia > 15):
+        elif (distancia <= 20) and (distancia > 15):
             Buzzer.value(1)
             utime.sleep(0.75)
             Buzzer.value(0)
-        if (distancia <= 15) and (distancia > 10):
+        elif (distancia <= 15) and (distancia > 10):
             Buzzer.value(1)
             utime.sleep(0.3)
             Buzzer.value(0)
-        if (distancia <= 10) and (distancia > 5):
+        elif (distancia <= 10) and (distancia > 5):
             Buzzer.value(1)
             utime.sleep(0.15)
             Buzzer.value(0)
-        if (distancia <= 5):
+        elif (distancia <= 5):
             Buzzer.value(1)
             detener()
-
+            Buzzer.value(0)
+            
+def toggle_sensor():
+    global sensor_activado
+    sensor_activado = not sensor_activado
+    if sensor_activado:
+        print("Sensor activado.")
+    else:
+        print("Sensor desactivado.")
+        
 detener()
     
 def conectar():
@@ -156,21 +164,7 @@ def serve(connection):
             peticion = peticion.split()[1]
         except IndexError:
             pass
-        global distancia
-        Trigger.high()
-        utime.sleep(0.00001)
-        Trigger.low()
-
-        while Echo.value() == 0:
-            comienzo = utime.ticks_us()
-        while Echo.value() == 1:
-            final = utime.ticks_us()
-
-        duracion = final - comienzo
-        distancia = int((duracion * 0.0343) / 2)
-        utime.sleep(0.1)
         
-        print(distancia)
         if peticion == '/adelante?':
             adelante()
         elif peticion =='/izquierda?':
@@ -184,8 +178,11 @@ def serve(connection):
             
         if peticion =='/bocina?':
             bocina()
-        if peticion =='/sensor?':
-            sensor()
+        if peticion == '/sensor?':
+            toggle_sensor()
+        if sensor_activado:
+            medir_distancia()
+            sleep(1)
 
         html = pagina_web()
         cliente.send(html)
@@ -199,3 +196,4 @@ except KeyboardInterrupt:
     machine.reset()
 
     
+
