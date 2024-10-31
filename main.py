@@ -49,23 +49,45 @@ def derecha():
     Motor_A_Atras.value(1)
     Motor_B_Atras.value(0)
 
+def bocina():
+    Buzzer.value(1)
+    sleep(1)
+    Buzzer.value(0)
+
 def sensor():
-    global distancia
-    global Estado
-    Estado = not Estado
-    if Estado == 1:
-        if distancia > 15:
+    while True:
+        Trigger.high()
+        utime.sleep(0.00001)
+        Trigger.low()
+
+        while Echo.value() == 0:
+            comienzo = utime.ticks_us()
+        while Echo.value() == 1:
+            final = utime.ticks_us()
+
+        duracion = final - comienzo
+        distancia = int((duracion * 0.0343) / 2)
+        utime.sleep(0.1)
+            
+        print(distancia)
+        
+        if distancia > 20:
             Buzzer.value(0)
-        if (distancia <= 15) and (distancia > 10):
+        if (distancia <= 20) and (distancia > 15):
             Buzzer.value(1)
             utime.sleep(0.75)
             Buzzer.value(0)
-        if (distancia <= 10) and (distancia > 5):
+        if (distancia <= 15) and (distancia > 10):
             Buzzer.value(1)
             utime.sleep(0.3)
             Buzzer.value(0)
+        if (distancia <= 10) and (distancia > 5):
+            Buzzer.value(1)
+            utime.sleep(0.15)
+            Buzzer.value(0)
         if (distancia <= 5):
             Buzzer.value(1)
+            detener()
 
 detener()
     
@@ -160,6 +182,8 @@ def serve(connection):
         elif peticion =='/atras?':
             atras()
             
+        if peticion =='/bocina?':
+            bocina()
         if peticion =='/sensor?':
             sensor()
 
