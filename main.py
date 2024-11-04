@@ -7,8 +7,8 @@ from machine import Timer
 import utime
 
 #Configuramos la red Wifi
-ssid = 'CasaPI'
-password = 'a1a1a1b2b2'
+ssid = 'Franp'
+password = 'Franperrotto'
 
 #Inicializacion de motores, ultrasonico y buzzer
 Motor_A_Adelante = Pin(18, Pin.OUT)
