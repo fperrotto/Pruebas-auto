@@ -7,8 +7,8 @@ from machine import Timer
 import utime
 
 #Configuramos la red Wifi
-ssid = 'Franp'
-password = 'Franperrotto'
+ssid = 'CasaPI'
+password = 'a1a1a1b2b2'
 
 #Inicializacion de motores, ultrasonico y buzzer
 Motor_A_Adelante = Pin(18, Pin.OUT)
@@ -174,10 +174,10 @@ def pagina_web():
 def serve(connection):
     while True:
         cliente = connection.accept()[0]
-        peticion = cliente.recv(1024) #Recive peticion
+        peticion = cliente.recv(1024) #Recibe peticion
         peticion = str(peticion)
         try:
-            peticion = peticion.split()[1] #Obtine la accion de la peticion
+            peticion = peticion.split()[1] #Obtiene la accion de la peticion
         except IndexError:
             pass
         
